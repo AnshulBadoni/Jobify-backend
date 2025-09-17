@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package jobplatform;
+
+// -------- Python-side AI services --------
+service ProfileAIService {
+  rpc GenerateGitHubSummary (GitHubSummaryRequest) returns (GitHubSummaryResponse);
+  rpc UploadResume (ResumeUploadRequest) returns (ResumeUploadResponse);
+  rpc UpdateResume (UpdateResumeRequest) returns (ResumeResponse);
+  rpc GenerateResume (GenerateResumeRequest) returns (ResumeResponse);
+}
+
+// Node → Python
+message GitHubSummaryRequest {
+  repeated string usernames = 1;
+}
+
+message GitHubSummaryResponse {
+  string overall_summary = 1;
+  float overall_rating = 2;
+  repeated string overall_tips = 3;
+  repeated string top_languages = 4;
+}
+
+message ResumeUploadRequest {
+  bytes file_content = 1;
+  string filename = 2;
+}
+
+message ResumeUploadResponse {
+  string extracted_text = 1;
+}
+
+message UpdateResumeRequest {
+  string existing_resume = 1;
+  string new_details = 2;
+}
+
+message GenerateResumeRequest {
+  string name = 1;
+  repeated string skills = 2;
+  string summary = 3;
+}
+
+message ResumeResponse {
+  string name = 1;
+  string summary = 2;
+  repeated string skills = 3;
+  string json_resume = 4; // whole AI-generated JSON as string
+}
+
+service PracticeInterviewService {
+  rpc PracticeQuestion (PracticeRequest) returns (PracticeResponse);
+}
+
+message PracticeRequest {
+  int32 userId = 1;
+  string prompt = 2; // candidate's answer or initial message
+  string jobDescription = 3; // required for start
+  string practice = 4; // "start", "continue", "end"
+}
+
+message PracticeResponse {
+  bool success = 1;
+  string response = 2; // AI's question or final evaluation
+  string error = 3; // optional
+}
+
+
+// -------- Node-side platform services --------
+// (future, not required now)
+service JobPlatformService {
+  rpc GetUserProfile (UserProfileRequest) returns (UserProfileResponse);
+  rpc GetJob (JobRequest) returns (JobResponse);
+}
+
+message UserProfileRequest {
+  int32 userId = 1;
+}
+
+message UserProfileResponse {
+  int32 userId = 1;
+  string fullName = 2;
+  string professionalRole = 3;
+  string companyName = 4;
+}
+
+message JobRequest {
+  int32 jobId = 1;
+}
+
+message JobResponse {
+  int32 jobId = 1;
+  string title = 2;
+  string description = 3;
+  string companyName = 4;
+}

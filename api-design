@@ -1,0 +1,46 @@
+🗂️ API Responsibility Matrix
+
+| API Endpoint                      | Description                       | Belongs To      |
+| --------------------------------- | --------------------------------- | --------------- |
+| `POST /api/auth/register`         | Register a new user               | Node.js         | ok
+| `POST /api/auth/login`            | Login and get JWT                 | Node.js         | ok
+| `GET /api/user/me`                | Get current user info             | Node.js         | ok
+| `PUT /api/profile/me`                | Update profile info               | Node.js         | ok
+| `GET /api/profile/me`                | Get current profile               | Node.js         | ok
+| `POST /api/profile/upload-resume` | Upload resume file                | Node.js         |    
+| `POST /api/profile/link-github`   | Connect GitHub                    | Node.js         |
+| `GET /api/jobs`                   | List all jobs                     | Node.js         | ok
+| `GET /api/jobs/:id`               | Job details                       | Node.js         | ok
+| `GET /api/jobs/search?q=`         | Search jobs by text               | Node.js         | ok
+| `POST /api/jobs/:id/apply`        | Apply to a job                    | Node.js         | ok
+| `GET /api/jobs/:id/candidates`    | View applicants for a job         | Node.js         | ok
+| `POST /api/jobs`                  | Post a new job                    | Node.js         | ok  
+| `GET /api/jobs/posted`            | Poster’s jobs list                | Node.js         | ok
+| `GET /api/profiles/:id`             | View candidate profile            | Node.js         | ok
+| `GET /api/profiles/:id/match`       | Match % for this candidate        | FastAPI         |
+| `GET /api/jobs/match`             | Closest jobs (AI vector search)   | FastAPI         |
+| `POST /api/vector/profile-embed`  | Embed seeker profile              | FastAPI         |
+| `POST /api/vector/job-embed`      | Embed job description             | FastAPI         |
+| `POST /api/resume/parse`          | Extract info from uploaded resume | FastAPI         | ok
+| `GET /api/admin/users`            | Admin: list all users             | Node.js         |
+| `DELETE /api/admin/users/:id`     | Admin: delete user                | Node.js         |
+| `GET /api/admin/stats`            | Admin: platform stats             | Node.js         |
+| `GET /api/chat/messages/:roomId`  | Get chat messages                 | Node.js         |
+| `POST /api/chat/send`             | Send message                      | Node.js         |
+| `WebSocket /chat`                 | Real-time communication           | Node.js + Redis |
+
+
+
+🔄 Flow: When to Use Node.js vs FastAPI
+| Task                                              | Service |
+| ------------------------------------------------- | ------- |
+| User authentication and access control            | Node.js |
+| Creating/editing/viewing job posts                | Node.js |
+| Viewing and applying for jobs                     | Node.js |
+| Resume file upload                                | Node.js |
+| Parsing resume content (AI)                       | FastAPI |
+| Generating vector embeddings                      | FastAPI |
+| Performing vector similarity search               | FastAPI |
+| Matching candidates to jobs or jobs to candidates | FastAPI |
+| Messaging via Socket.IO                           | Node.js |
+| Admin dashboards and analytics                    | Node.js |

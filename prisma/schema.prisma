@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  username   String   @unique
+  password   String
+  role       UserRole
+  isVerified Boolean  @default(false)
+  avatar     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relationships
+  profile          Profile?
+  jobs             Job[]         @relation("PostedJobs")
+  applications     Application[]
+  sentMessages     Message[]     @relation("SentMessages")
+  receivedMessages Message[]     @relation("ReceivedMessages")
+
+  // Chat
+  conversationsInitiated Conversation[] @relation("ConversationInitiator")
+  conversationsReceived  Conversation[] @relation("ConversationReceiver")
+  MessageRead            MessageRead[]
+}
+
+model Profile {
+  id               Int       @id @default(autoincrement())
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           Int       @unique
+  fullName         String?
+  bio              String?
+  companyId        Int?
+  currentCompany   Company?  @relation(fields: [companyId], references: [id])
+  location         String?
+  currentLocation  String?
+  expectedLocation String?
+  currentCTC       String?
+  expectedCTC      String?
+  professionalRole String?
+  background       String?
+  githubUrl        String?
+  summary          String?
+  resumeUrl        String?
+  rating           Float?
+  skills           String[]
+  experience       String?
+  projects         Project[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  imgs        String[]
+  skills      String[]
+  link        String?
+  startDate   String?
+  endDate     String?
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId   Int
+}
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  iconUrl   String?
+  website   String?
+  location  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employees Profile[]
+  jobs      Job[]
+}
+
+model Job {
+  id          Int             @id @default(autoincrement())
+  poster      User            @relation("PostedJobs", fields: [posterId], references: [id], onDelete: Cascade)
+  posterId    Int
+  company     Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   Int
+  title       String
+  description String
+  skills      String[]
+  type        JobType
+  location    String
+  salaryMin   Int?
+  salaryMax   Int?
+  currency    String?
+  experience  ExperienceLevel
+  employment  EmploymentType
+  openings    Int?            @default(1)
+  status      JobStatus       @default(OPEN)
+  slug        String          @unique
+  featured    Boolean         @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications Application[]
+
+  @@index([status])
+  @@index([location])
+  @@index([companyId])
+}
+
+model Application {
+  id         Int       @id @default(autoincrement())
+  job        Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId      Int
+  seeker     User      @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  seekerId   Int
+  status     AppStatus @default(PENDING)
+  appliedAt  DateTime  @default(now())
+  matchScore Float?
+
+  @@unique([jobId, seekerId])
+}
+
+model Embedding {
+  id        Int           @id @default(autoincrement())
+  userId    Int?          @unique
+  jobId     Int?          @unique
+  vector    Json
+  type      EmbeddingType
+  createdAt DateTime      @default(now())
+}
+
+model Message {
+  id          Int           @id @default(autoincrement())
+  content     String
+  messageType MessageType   @default(TEXT)
+  status      MessageStatus @default(SENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sender         User          @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId       Int
+  receiver       User?         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId     Int?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId Int?
+
+  readBy MessageRead[]
+}
+
+model Conversation {
+  id            Int       @id @default(autoincrement())
+  initiator     User      @relation("ConversationInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  initiatorId   Int
+  receiver      User      @relation("ConversationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId    Int
+  messages      Message[]
+  lastMessage   String?
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([initiatorId, receiverId])
+}
+
+model MessageRead {
+  id        Int      @id @default(autoincrement())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId Int
+  reader    User     @relation(fields: [readerId], references: [id], onDelete: Cascade)
+  readerId  Int
+  readAt    DateTime @default(now())
+
+  @@unique([messageId, readerId])
+}
+
+enum UserRole {
+  ADMIN
+  SEEKER
+  POSTER
+}
+
+enum AppStatus {
+  PENDING
+  SHORTLISTED
+  REJECTED
+  ACCEPTED
+}
+
+enum EmbeddingType {
+  JOB
+  SEEKER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  AUDIO
+  VIDEO
+  SYSTEM
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  DRAFT
+}
+
+enum ExperienceLevel {
+  INTERN
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+}
+
+enum EmploymentType {
+  FULLTIME
+  PARTTIME
+  CONTRACT
+  INTERNSHIP
+}

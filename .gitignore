@@ -1,0 +1,9 @@
+node_modules
+# Keep environment variables out of version control
+.env
+/AIML/.venv/
+*/__init*
+system-design
+*.pyc
+*.sql
+*.toml
