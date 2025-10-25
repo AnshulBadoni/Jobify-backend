@@ -25,6 +25,18 @@ export const getProfile = async (req: Request, res: Response) => {
             role: true,
           },
         },
+        projects: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            imgs: true,
+            skills: true,
+            link: true,
+            startDate: true,
+            endDate: true,
+          }
+        }
       }
     });
 
@@ -52,25 +64,37 @@ export const getMe = async (req: Request, res: Response) => {
 
 export const getSummary = async (req: Request, res: Response) => {
   try {
+    const refresh = req.body.refresh || false;
+    // const id = (req as any).user?.id;
+    // if (!id) {
+    //   res.status(401).send(setResponse(401, "Unauthorized", []));
+    //   return
+    // }
+    // if (!refresh) {
+    //   const existing = await prisma.profile.findUnique({
+    //     where: { userId: id },
+    //     select: { summary: true },
+    //   });
+    //   if (existing?.summary) {
+    //     res.status(200).send(setResponse(200, "Summary fetched", existing.summary));
+    //     return
+    //   }
+    // }
+
     let { usernames } = req.body;
-    console.log(usernames);
-    // Always normalize into an array of strings
     if (!Array.isArray(usernames)) {
-      usernames = [usernames];
+      usernames = usernames.split(',').map((u: string) => u.trim());
     }
-    console.log(usernames, "now");
 
     const summary = await generateSummary(usernames);
-    // save it to db
+    console.log("Summary generated:", summary);
+
     // const summaryData = await prisma.profile.upsert({
-    //   where: { userId: (req as any).user.id },
+    //   where: { userId: id },
     //   update: { summary },
-    //   create: { userId: (req as any).user.id, summary },
-    // })
-    // if (!summaryData) {
-    //   res.status(404).send(setResponse(404, "Summary not found", []));
-    //   return;
-    // }
+    //   create: { userId: id, summary },
+    // });
+
     res.status(200).send(setResponse(200, "Summary generated", summary));
   } catch (error) {
     console.error("Error generating summary:", error);
@@ -80,85 +104,127 @@ export const getSummary = async (req: Request, res: Response) => {
 
 export const getResume = async (req: Request, res: Response) => {
   const resume: Resume = {
-    "name": "Prince Sharma",
-    "contact": "princesharma57200@gmail.com | +91 8979445689 | LinkedIn: https://www.linkedin.com/in/prince-sharma-3257721a7/ | GitHub: https://github.com/Prince57200",
-    "summary": "Frontend-focused Angular Developer, a fresher, seeking a full-time role to build scalable, high-quality web applications. Proficient in Angular 17+, RxJS, NgRx, and modern CSS frameworks, with hands-on internship experience delivering responsive interfaces, component-driven architecture, and REST API integration. Eager to contribute to a collaborative team and drive user-centric outcomes.",
+    "name": "Anshul Badoni",
+    "contact": "anshulbadoni359@gmail.com 8630736982",
+    "summary": "Results-driven full-stack AI engineer with hands-on experience delivering scalable AI-enabled web applications. Proficient in Node.js, FastAPI, Next.js, Angular, and real-time systems; skilled in production ML integration, model serving, and data-driven personalization. Demonstrated ability to reduce latency, improve engagement, and drive observability in production systems. Seeking senior roles focused on end-to-end AI solution architecture and delivery.",
     "skills": [
       {
         "category": "Programming Languages",
         "items": [
-          "HTML5",
-          "CSS3",
-          "JavaScript (ES6+)",
-          "TypeScript",
-          "Java"
+          "C",
+          "C++",
+          "Java",
+          "Python",
+          "JavaScript",
+          "TypeScript"
         ]
       },
       {
         "category": "Frameworks / Libraries",
         "items": [
-          "Angular 17+",
-          "RxJS",
-          "NgRx",
-          "Bootstrap",
-          "Tailwind CSS"
+          "Node.js",
+          "Express.js",
+          "NestJS",
+          "FastAPI",
+          "Angular",
+          "React.js",
+          "Next.js",
+          "TensorFlow",
+          "Scikit-learn"
         ]
       },
       {
         "category": "Tools / Platforms",
         "items": [
-          "VS Code",
           "Git",
-          "Postman",
-          "Chrome DevTools"
+          "Tailwind CSS",
+          "Redis",
+          "Kafka",
+          "BullMQ",
+          "gRPC",
+          "WebSockets",
+          "WebRTC",
+          "Janus Gateway",
+          "ChromaDB"
         ]
       },
       {
         "category": "Databases",
         "items": [
-          "SQL (MySQL, PostgreSQL)"
+          "MongoDB",
+          "MySQL",
+          "OracleDB",
+          "PostgreSQL"
         ]
       }
     ],
     "experience": [
       {
-        "title": "Angular Developer Intern",
-        "company": "Confidential Internship",
-        "location": "Gurugram, India",
-        "period": "May 2025 - August 2025",
+        "title": "Software Engineer",
+        "company": "Monet Networks",
+        "location": "Gurugram",
+        "period": "Apr 2025 - Present",
         "details": [
-          "Developed responsive, cross-device web applications using Angular 17, enhancing user experience.",
-          "Built reusable components with two-way data binding and implemented routing to reduce code duplication and improve maintainability.",
-          "Integrated RESTful APIs via HttpClient for real-time data exchange and seamless backend communication.",
-          "Implemented form validation, route guards, and service-based component communication to ensure secure and reliable SPA functionality."
+          "Maintained and extended real-time survey platform using Node.js, WebRTC and Janus Gateway, improving system stability by 30% and reducing response latency by 20%.",
+          "Designed and integrated AI/ML microservices (face emotion detection, blink analysis) via FastAPI, increasing survey engagement and improving sentiment accuracy.",
+          "Optimized backend workflows and API endpoints, achieving a 15% improvement in average API response time and enabling more personalized survey experiences.",
+          "Collaborated with product and frontend teams to deliver low-latency real-time features and improve observability for production systems."
+        ]
+      },
+      {
+        "title": "Software Developer",
+        "company": "Synergy Software",
+        "location": "Noida",
+        "period": "Apr 2024 - Apr 2025",
+        "details": [
+          "Implemented responsive finance products using Angular, Next.js, Node.js and Express.js, improving application performance and user experience through front-end and backend optimizations.",
+          "Built modular, testable components and services to accelerate feature delivery and reduce regression risk across releases.",
+          "Worked with stakeholders to convert business requirements into scalable technical solutions and improved deployment workflows."
+        ]
+      },
+      {
+        "title": "Data Science Intern",
+        "company": "IBM",
+        "location": "Remote",
+        "period": "Jan 2024 - Apr 2024",
+        "details": [
+          "Developed a hybrid recommendation system that combined collaborative and content-based approaches to improve recommendation relevance.",
+          "Implemented end-to-end evaluation pipelines to measure model performance and supported iteration on feature engineering and model tuning."
         ]
       }
     ],
     "education": [
       {
-        "institution": "GL Bajaj Group of Institute",
-        "degree": "B.Tech CSE",
-        "period": "August 2019 - July 2023"
+        "institution": "University of Petroleum and Energy Studies (UPES)",
+        "location": "Dehradun",
+        "degree": "MCA - AI & ML",
+        "period": "2022 - 2024"
+      },
+      {
+        "institution": "University of Petroleum and Energy Studies (UPES)",
+        "location": "Dehradun",
+        "degree": "BCA - IoT",
+        "period": "2019 - 2022"
       }
     ],
     "projects": [
       {
-        "title": "Probing Survey Creation",
+        "title": "Jobify (AI-powered Job Matching)",
         "link": "",
-        "tech": "Angular, TypeScript, HTML, Tailwind, REST API",
-        "description": "Designed and implemented a frontend platform for creating, editing, and managing surveys with secure token-based authentication and REST API integration. Built modular Angular components leveraging RxJS for asynchronous data flows and state management, ensuring a responsive and scalable UI. Implemented client-side form validation, role-based access controls, and efficient routing to optimize user workflows. Collaborated with backend teams to integrate REST endpoints, improving data reliability and performance."
+        "tech": "Node.js, FastAPI, Next.js, gRPC, Redis, WebSockets",
+        "description": "AI-driven job matching platform that combines profile parsing, vector search, and ML scoring. Utilizes Node.js for core services, FastAPI for AI tasks, gRPC for inter-service communication, Redis for caching, and WebSockets for real-time notifications; delivered a production-ready pipeline with reduced match latency."
       },
       {
-        "title": "Taker Web Application",
+        "title": "Compliance App",
         "link": "",
-        "tech": "Angular, Java Servlets, Hibernate, MySQL, HTML, CSS, Bootstrap",
-        "description": "Developed a notes-focused frontend enabling create, edit, and delete operations with a responsive UI using Angular and Bootstrap. Implemented data persistence through REST APIs and a robust backend stack (Hibernate, MySQL) ensuring data integrity. Integrated secure authentication and authorization within an MVC architecture to safeguard user data. Optimized user workflows with component-driven design and reusable services for maintainability."
+        "tech": "Next.js, Express.js, Node.js, PostgreSQL, Redis, WebSockets",
+        "description": "Full-stack productivity tool with real-time chat and task management. Implemented Retrieval-Augmented Generation (RAG) to surface project insights and improve team productivity."
       },
       {
-        "title": "Analytic Dashboard for Surveys",
+        "title": "J++ Language",
         "link": "",
-        "tech": "Angular, Tailwind CSS",
-        "description": "Built an internal analytics dashboard to visualize survey data through interactive charts and tables. Implemented data-driven visualizations and filtering, enabling rapid insights, aggregation, and drill-down analysis. Engineered responsive UI with Tailwind CSS and optimized performance for real-time data updates. Collaborated with stakeholders to translate analytical requirements into actionable metrics and dashboards."
+        "tech": "C",
+        "description": "Designed and implemented a dynamic programming language with a custom lexer, parser, and AST visitor in C to explore compiler concepts and language design."
       }
     ]
   }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listJobs, getJob, searchJobs, applyJob, postJob, getPostedJobs, getJobCandidates, deleteJob } from "../Controllers/jobController";
+import { listJobs, getJob, searchJobs, applyJob, postJob, getPostedJobs, getJobCandidates, deleteJob, getClosestJobs } from "../Controllers/jobController";
 import { authenticateUser, authorizeRoles } from "../Middlewares/authMiddleware";
 
 const router = Router();
@@ -16,6 +16,13 @@ router.post(
     authorizeRoles("SEEKER"),
     applyJob
 );
+
+router.get(
+    "closest/:id",
+    authenticateUser,
+    authorizeRoles("SEEKER"),
+    getClosestJobs
+)
 
 //////////////////////////poster routes////////////////////////////
 router.post(

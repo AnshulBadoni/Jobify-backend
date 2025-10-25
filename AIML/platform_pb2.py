@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0eplatform.proto\x12\x0bjobplatform\")\n\x14GitHubSummaryRequest\x12\x11\n\tusernames\x18\x01 \x03(\t\"u\n\x15GitHubSummaryResponse\x12\x17\n\x0foverall_summary\x18\x01 \x01(\t\x12\x16\n\x0eoverall_rating\x18\x02 \x01(\x02\x12\x14\n\x0coverall_tips\x18\x03 \x03(\t\x12\x15\n\rtop_languages\x18\x04 \x03(\t\"=\n\x13ResumeUploadRequest\x12\x14\n\x0c\x66ile_content\x18\x01 \x01(\x0c\x12\x10\n\x08\x66ilename\x18\x02 \x01(\t\".\n\x14ResumeUploadResponse\x12\x16\n\x0e\x65xtracted_text\x18\x01 \x01(\t\"C\n\x13UpdateResumeRequest\x12\x17\n\x0f\x65xisting_resume\x18\x01 \x01(\t\x12\x13\n\x0bnew_details\x18\x02 \x01(\t\"F\n\x15GenerateResumeRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06skills\x18\x02 \x03(\t\x12\x0f\n\x07summary\x18\x03 \x01(\t\"T\n\x0eResumeResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07summary\x18\x02 \x01(\t\x12\x0e\n\x06skills\x18\x03 \x03(\t\x12\x13\n\x0bjson_resume\x18\x04 \x01(\t\"$\n\x12UserProfileRequest\x12\x0e\n\x06userId\x18\x01 \x01(\x05\"f\n\x13UserProfileResponse\x12\x0e\n\x06userId\x18\x01 \x01(\x05\x12\x10\n\x08\x66ullName\x18\x02 \x01(\t\x12\x18\n\x10professionalRole\x18\x03 \x01(\t\x12\x13\n\x0b\x63ompanyName\x18\x04 \x01(\t\"\x1b\n\nJobRequest\x12\r\n\x05jobId\x18\x01 \x01(\x05\"U\n\x0bJobResponse\x12\r\n\x05jobId\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x13\n\x0b\x63ompanyName\x18\x04 \x01(\t2\xe9\x02\n\x10ProfileAIService\x12^\n\x15GenerateGitHubSummary\x12!.jobplatform.GitHubSummaryRequest\x1a\".jobplatform.GitHubSummaryResponse\x12S\n\x0cUploadResume\x12 .jobplatform.ResumeUploadRequest\x1a!.jobplatform.ResumeUploadResponse\x12M\n\x0cUpdateResume\x12 .jobplatform.UpdateResumeRequest\x1a\x1b.jobplatform.ResumeResponse\x12Q\n\x0eGenerateResume\x12\".jobplatform.GenerateResumeRequest\x1a\x1b.jobplatform.ResumeResponse2\xa6\x01\n\x12JobPlatformService\x12S\n\x0eGetUserProfile\x12\x1f.jobplatform.UserProfileRequest\x1a .jobplatform.UserProfileResponse\x12;\n\x06GetJob\x12\x17.jobplatform.JobRequest\x1a\x18.jobplatform.JobResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0eplatform.proto\x12\x0bjobplatform\")\n\x14GitHubSummaryRequest\x12\x11\n\tusernames\x18\x01 \x03(\t\"u\n\x15GitHubSummaryResponse\x12\x17\n\x0foverall_summary\x18\x01 \x01(\t\x12\x16\n\x0eoverall_rating\x18\x02 \x01(\x02\x12\x14\n\x0coverall_tips\x18\x03 \x03(\t\x12\x15\n\rtop_languages\x18\x04 \x03(\t\"=\n\x13ResumeUploadRequest\x12\x14\n\x0c\x66ile_content\x18\x01 \x01(\x0c\x12\x10\n\x08\x66ilename\x18\x02 \x01(\t\".\n\x14ResumeUploadResponse\x12\x16\n\x0e\x65xtracted_text\x18\x01 \x01(\t\"C\n\x13UpdateResumeRequest\x12\x17\n\x0f\x65xisting_resume\x18\x01 \x01(\t\x12\x13\n\x0bnew_details\x18\x02 \x01(\t\"F\n\x15GenerateResumeRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x06skills\x18\x02 \x03(\t\x12\x0f\n\x07summary\x18\x03 \x01(\t\"T\n\x0eResumeResponse\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07summary\x18\x02 \x01(\t\x12\x0e\n\x06skills\x18\x03 \x03(\t\x12\x13\n\x0bjson_resume\x18\x04 \x01(\t\"e\n\x17PracticeQuestionRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0e\n\x06prompt\x18\x02 \x01(\t\x12\x17\n\x0fjob_description\x18\x03 \x01(\t\x12\x10\n\x08practice\x18\x04 \x01(\t\"+\n\x18PracticeQuestionResponse\x12\x0f\n\x07success\x18\x01 \x01(\t\" \n\x10\x45mbeddingRequest\x12\x0c\n\x04text\x18\x01 \x01(\t\"\x13\n\x11\x45mbeddingResponse\"1\n\x11SimilarityRequest\x12\r\n\x05text1\x18\x01 \x01(\t\x12\r\n\x05text2\x18\x02 \x01(\t\"\x90\x01\n\x12SimilarityResponse\x12\x1c\n\x14\x65mbedding_similarity\x18\x01 \x01(\x02\x12\x17\n\x0f\x66uzz_similarity\x18\x02 \x01(\x02\x12\x1b\n\x13\x63ombined_similarity\x18\x03 \x01(\x02\x12\x12\n\ncanonical1\x18\x04 \x01(\t\x12\x12\n\ncanonical2\x18\x05 \x01(\t\"T\n\x16\x46\x61stSimilarityResponse\x12\x12\n\nsimilarity\x18\x01 \x01(\x02\x12\x12\n\ncanonical1\x18\x02 \x01(\t\x12\x12\n\ncanonical2\x18\x03 \x01(\t\"$\n\x12UserProfileRequest\x12\x0e\n\x06userId\x18\x01 \x01(\x05\"f\n\x13UserProfileResponse\x12\x0e\n\x06userId\x18\x01 \x01(\x05\x12\x10\n\x08\x66ullName\x18\x02 \x01(\t\x12\x18\n\x10professionalRole\x18\x03 \x01(\t\x12\x13\n\x0b\x63ompanyName\x18\x04 \x01(\t\"\x1b\n\nJobRequest\x12\r\n\x05jobId\x18\x01 \x01(\x05\"U\n\x0bJobResponse\x12\r\n\x05jobId\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x13\n\x0b\x63ompanyName\x18\x04 \x01(\t2\xe9\x02\n\x10ProfileAIService\x12^\n\x15GenerateGitHubSummary\x12!.jobplatform.GitHubSummaryRequest\x1a\".jobplatform.GitHubSummaryResponse\x12S\n\x0cUploadResume\x12 .jobplatform.ResumeUploadRequest\x1a!.jobplatform.ResumeUploadResponse\x12M\n\x0cUpdateResume\x12 .jobplatform.UpdateResumeRequest\x1a\x1b.jobplatform.ResumeResponse\x12Q\n\x0eGenerateResume\x12\".jobplatform.GenerateResumeRequest\x1a\x1b.jobplatform.ResumeResponse2t\n\x11PracticeAIService\x12_\n\x10PracticeQuestion\x12$.jobplatform.PracticeQuestionRequest\x1a%.jobplatform.PracticeQuestionResponse2\x86\x02\n\x0fVectorAIService\x12M\n\x0cGetEmbedding\x12\x1d.jobplatform.EmbeddingRequest\x1a\x1e.jobplatform.EmbeddingResponse\x12M\n\nSimilarity\x12\x1e.jobplatform.SimilarityRequest\x1a\x1f.jobplatform.SimilarityResponse\x12U\n\x0e\x46\x61stSimilarity\x12\x1e.jobplatform.SimilarityRequest\x1a#.jobplatform.FastSimilarityResponse2\xa6\x01\n\x12JobPlatformService\x12S\n\x0eGetUserProfile\x12\x1f.jobplatform.UserProfileRequest\x1a .jobplatform.UserProfileResponse\x12;\n\x06GetJob\x12\x17.jobplatform.JobRequest\x1a\x18.jobplatform.JobResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -45,16 +45,34 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GENERATERESUMEREQUEST']._serialized_end=443
   _globals['_RESUMERESPONSE']._serialized_start=445
   _globals['_RESUMERESPONSE']._serialized_end=529
-  _globals['_USERPROFILEREQUEST']._serialized_start=531
-  _globals['_USERPROFILEREQUEST']._serialized_end=567
-  _globals['_USERPROFILERESPONSE']._serialized_start=569
-  _globals['_USERPROFILERESPONSE']._serialized_end=671
-  _globals['_JOBREQUEST']._serialized_start=673
-  _globals['_JOBREQUEST']._serialized_end=700
-  _globals['_JOBRESPONSE']._serialized_start=702
-  _globals['_JOBRESPONSE']._serialized_end=787
-  _globals['_PROFILEAISERVICE']._serialized_start=790
-  _globals['_PROFILEAISERVICE']._serialized_end=1151
-  _globals['_JOBPLATFORMSERVICE']._serialized_start=1154
-  _globals['_JOBPLATFORMSERVICE']._serialized_end=1320
+  _globals['_PRACTICEQUESTIONREQUEST']._serialized_start=531
+  _globals['_PRACTICEQUESTIONREQUEST']._serialized_end=632
+  _globals['_PRACTICEQUESTIONRESPONSE']._serialized_start=634
+  _globals['_PRACTICEQUESTIONRESPONSE']._serialized_end=677
+  _globals['_EMBEDDINGREQUEST']._serialized_start=679
+  _globals['_EMBEDDINGREQUEST']._serialized_end=711
+  _globals['_EMBEDDINGRESPONSE']._serialized_start=713
+  _globals['_EMBEDDINGRESPONSE']._serialized_end=732
+  _globals['_SIMILARITYREQUEST']._serialized_start=734
+  _globals['_SIMILARITYREQUEST']._serialized_end=783
+  _globals['_SIMILARITYRESPONSE']._serialized_start=786
+  _globals['_SIMILARITYRESPONSE']._serialized_end=930
+  _globals['_FASTSIMILARITYRESPONSE']._serialized_start=932
+  _globals['_FASTSIMILARITYRESPONSE']._serialized_end=1016
+  _globals['_USERPROFILEREQUEST']._serialized_start=1018
+  _globals['_USERPROFILEREQUEST']._serialized_end=1054
+  _globals['_USERPROFILERESPONSE']._serialized_start=1056
+  _globals['_USERPROFILERESPONSE']._serialized_end=1158
+  _globals['_JOBREQUEST']._serialized_start=1160
+  _globals['_JOBREQUEST']._serialized_end=1187
+  _globals['_JOBRESPONSE']._serialized_start=1189
+  _globals['_JOBRESPONSE']._serialized_end=1274
+  _globals['_PROFILEAISERVICE']._serialized_start=1277
+  _globals['_PROFILEAISERVICE']._serialized_end=1638
+  _globals['_PRACTICEAISERVICE']._serialized_start=1640
+  _globals['_PRACTICEAISERVICE']._serialized_end=1756
+  _globals['_VECTORAISERVICE']._serialized_start=1759
+  _globals['_VECTORAISERVICE']._serialized_end=2021
+  _globals['_JOBPLATFORMSERVICE']._serialized_start=2024
+  _globals['_JOBPLATFORMSERVICE']._serialized_end=2190
 # @@protoc_insertion_point(module_scope)

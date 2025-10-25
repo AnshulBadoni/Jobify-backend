@@ -20,6 +20,9 @@ async def generate_profile_data(usernames: str) -> dict:
 
     overall_prompt = f"""
     Summarize the combined profiles of the developers:
+    also add top 2 projects/repo and showcase of what 
+    give atleast 5 languages
+    find internal technologies and tools if used like redis kafka docker ci/cd if can find
 
     {combined_info}
 

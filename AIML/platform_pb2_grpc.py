@@ -26,7 +26,7 @@ if _version_not_supported:
 
 
 class ProfileAIServiceStub(object):
-    """-------- Python-side AI services --------
+    """-------- this is python side services --------
     """
 
     def __init__(self, channel):
@@ -58,7 +58,7 @@ class ProfileAIServiceStub(object):
 
 
 class ProfileAIServiceServicer(object):
-    """-------- Python-side AI services --------
+    """-------- this is python side services --------
     """
 
     def GenerateGitHubSummary(self, request, context):
@@ -117,7 +117,7 @@ def add_ProfileAIServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class ProfileAIService(object):
-    """-------- Python-side AI services --------
+    """-------- this is python side services --------
     """
 
     @staticmethod
@@ -218,6 +218,236 @@ class ProfileAIService(object):
             '/jobplatform.ProfileAIService/GenerateResume',
             platform__pb2.GenerateResumeRequest.SerializeToString,
             platform__pb2.ResumeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class PracticeAIServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.PracticeQuestion = channel.unary_unary(
+                '/jobplatform.PracticeAIService/PracticeQuestion',
+                request_serializer=platform__pb2.PracticeQuestionRequest.SerializeToString,
+                response_deserializer=platform__pb2.PracticeQuestionResponse.FromString,
+                _registered_method=True)
+
+
+class PracticeAIServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def PracticeQuestion(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_PracticeAIServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'PracticeQuestion': grpc.unary_unary_rpc_method_handler(
+                    servicer.PracticeQuestion,
+                    request_deserializer=platform__pb2.PracticeQuestionRequest.FromString,
+                    response_serializer=platform__pb2.PracticeQuestionResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'jobplatform.PracticeAIService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('jobplatform.PracticeAIService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class PracticeAIService(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def PracticeQuestion(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jobplatform.PracticeAIService/PracticeQuestion',
+            platform__pb2.PracticeQuestionRequest.SerializeToString,
+            platform__pb2.PracticeQuestionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class VectorAIServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.GetEmbedding = channel.unary_unary(
+                '/jobplatform.VectorAIService/GetEmbedding',
+                request_serializer=platform__pb2.EmbeddingRequest.SerializeToString,
+                response_deserializer=platform__pb2.EmbeddingResponse.FromString,
+                _registered_method=True)
+        self.Similarity = channel.unary_unary(
+                '/jobplatform.VectorAIService/Similarity',
+                request_serializer=platform__pb2.SimilarityRequest.SerializeToString,
+                response_deserializer=platform__pb2.SimilarityResponse.FromString,
+                _registered_method=True)
+        self.FastSimilarity = channel.unary_unary(
+                '/jobplatform.VectorAIService/FastSimilarity',
+                request_serializer=platform__pb2.SimilarityRequest.SerializeToString,
+                response_deserializer=platform__pb2.FastSimilarityResponse.FromString,
+                _registered_method=True)
+
+
+class VectorAIServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def GetEmbedding(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Similarity(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def FastSimilarity(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_VectorAIServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'GetEmbedding': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetEmbedding,
+                    request_deserializer=platform__pb2.EmbeddingRequest.FromString,
+                    response_serializer=platform__pb2.EmbeddingResponse.SerializeToString,
+            ),
+            'Similarity': grpc.unary_unary_rpc_method_handler(
+                    servicer.Similarity,
+                    request_deserializer=platform__pb2.SimilarityRequest.FromString,
+                    response_serializer=platform__pb2.SimilarityResponse.SerializeToString,
+            ),
+            'FastSimilarity': grpc.unary_unary_rpc_method_handler(
+                    servicer.FastSimilarity,
+                    request_deserializer=platform__pb2.SimilarityRequest.FromString,
+                    response_serializer=platform__pb2.FastSimilarityResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'jobplatform.VectorAIService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('jobplatform.VectorAIService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class VectorAIService(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def GetEmbedding(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jobplatform.VectorAIService/GetEmbedding',
+            platform__pb2.EmbeddingRequest.SerializeToString,
+            platform__pb2.EmbeddingResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Similarity(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jobplatform.VectorAIService/Similarity',
+            platform__pb2.SimilarityRequest.SerializeToString,
+            platform__pb2.SimilarityResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def FastSimilarity(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jobplatform.VectorAIService/FastSimilarity',
+            platform__pb2.SimilarityRequest.SerializeToString,
+            platform__pb2.FastSimilarityResponse.FromString,
             options,
             channel_credentials,
             insecure,

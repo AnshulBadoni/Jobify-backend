@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package jobplatform;
 
-// -------- Python-side AI services --------
+// -------- this is python side services --------
 service ProfileAIService {
   rpc GenerateGitHubSummary (GitHubSummaryRequest) returns (GitHubSummaryResponse);
   rpc UploadResume (ResumeUploadRequest) returns (ResumeUploadResponse);
@@ -10,7 +10,17 @@ service ProfileAIService {
   rpc GenerateResume (GenerateResumeRequest) returns (ResumeResponse);
 }
 
-// Node → Python
+service PracticeAIService {
+  rpc PracticeQuestion (PracticeQuestionRequest) returns (PracticeQuestionResponse);
+}
+
+service VectorAIService {
+  rpc GetEmbedding (EmbeddingRequest) returns (EmbeddingResponse);
+  rpc Similarity (SimilarityRequest) returns (SimilarityResponse);
+  rpc FastSimilarity (SimilarityRequest) returns (FastSimilarityResponse);
+}
+
+// this is flow from node to python
 message GitHubSummaryRequest {
   repeated string usernames = 1;
 }
@@ -46,26 +56,46 @@ message ResumeResponse {
   string name = 1;
   string summary = 2;
   repeated string skills = 3;
-  string json_resume = 4; // whole AI-generated JSON as string
+  string json_resume = 4; 
+} 
+
+message PracticeQuestionRequest {
+  string user_id = 1;
+  string prompt = 2;
+  string job_description = 3;
+  string practice = 4;
 }
 
-service PracticeInterviewService {
-  rpc PracticeQuestion (PracticeRequest) returns (PracticeResponse);
+message PracticeQuestionResponse {
+  string success = 1;
+  // later to declare datatype
 }
 
-message PracticeRequest {
-  int32 userId = 1;
-  string prompt = 2; // candidate's answer or initial message
-  string jobDescription = 3; // required for start
-  string practice = 4; // "start", "continue", "end"
+message EmbeddingRequest {
+  string text = 1;
 }
 
-message PracticeResponse {
-  bool success = 1;
-  string response = 2; // AI's question or final evaluation
-  string error = 3; // optional
+message EmbeddingResponse {
 }
 
+message SimilarityRequest {
+  string text1 = 1;
+  string text2 = 2; 
+}
+
+message SimilarityResponse {
+  float embedding_similarity = 1;
+  float fuzz_similarity = 2;
+  float combined_similarity = 3;
+  string canonical1 = 4;
+  string canonical2 = 5;
+}
+
+ message FastSimilarityResponse {
+  float similarity = 1;
+  string canonical1 = 2;
+  string canonical2 = 3;
+ } 
 
 // -------- Node-side platform services --------
 // (future, not required now)

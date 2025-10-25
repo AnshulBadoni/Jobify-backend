@@ -95,6 +95,26 @@ export const applyJob = async (req: Request, res: Response) => {
   }
 };
 
+export const getClosestJobs = async (req: Request, res: Response) => {
+  try {
+    const id = (req as any).user.id;
+    if (!id) {
+      res.status(401).send(setResponse(401, "Unauthorized", []));
+      return
+    }
+    const user = await prisma.profile.findUnique({ where: { id } });
+
+    
+    const jobs = await prisma.job.findMany({
+      include: { company: true },
+    });
+    res.status(200).send(setResponse(200, "Closed jobs fetched", jobs));
+  } catch (error) {
+    console.error("Error fetching closed jobs:", error);
+    res.status(500).send(setResponse(500, "Server error", []));
+  }
+};
+
 export const getJobCandidates = async (req: Request, res: Response) => {
   try {
     const jobId = parseInt(req.params.id);

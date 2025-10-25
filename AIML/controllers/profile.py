@@ -60,7 +60,7 @@ Instructions:
 Output a structured JSON format resume with the following schema:
 {{
     "name": "Full Name",
-    "contact": "Email | Phone | LinkedIn | GitHub | Portfolio", (if they exist else remove them)
+    "contact": "Email | Phone | LinkedIn | GitHub | Portfolio", (make them in hyper-link and if they exist else remove them)
     "summary": "Professional summary paragraph",
     "skills": [
         {{category:"Programming Languages",items: ["C", "C++", "Java", ...]}},

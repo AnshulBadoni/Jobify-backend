@@ -71,7 +71,7 @@ async def async_embed(text: str):
 # --- Routes ---
 @vector.post("/embed", response_model=EmbedResponse)
 async def generate_embedding(req: EmbedRequest):
-    embedding = await async_embed(normalize_text(req.text))
+    embedding = await async_embed(canonicalize(req.text))
     return {"embedding": embedding.tolist()}
 
 @vector.post("/similarity", response_model=SimilarityResponse)
@@ -95,7 +95,7 @@ async def rapid_fuzz(req: SimilarityRequest):
     canon2 = canonicalize(req.text2)
     similarity = fuzz.token_set_ratio(canon1, canon2)
     return {
-        "similarity": float(similarity),
+        "similarity": float(similarity + 15) ,
         "canonical1": canon1,
         "canonical2": canon2
     }
@@ -110,7 +110,7 @@ async def similarity_combined(req: SimilarityRequest):
     emb_sim = dot(emb1, emb2) / (norm(emb1) * norm(emb2))
 
     # RapidFuzz similarity
-    fuzz_sim = fuzz.token_set_ratio(canon1, canon2) / 100.0  # scale 0–1
+    fuzz_sim = (fuzz.token_set_ratio(canon1, canon2) + 15 )/ 100.0  # scale 0–1
 
     # Weighted blend
     combined = 0.6 * emb_sim + 0.4 * fuzz_sim

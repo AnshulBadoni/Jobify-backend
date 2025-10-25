@@ -94,7 +94,7 @@ export const signIn = async (req: Request, res: Response) => {
             secure: false, // set true in production (HTTPS)
             sameSite: "lax",
             maxAge: 24 * 60 * 60 * 1000,
-            domain: "192.168.5.148",
+            // domain: "192.168.29.148",
         });
 
         // Hide password

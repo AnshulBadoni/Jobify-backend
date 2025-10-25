@@ -17,7 +17,7 @@ import companyRoutes from "./routes/companyRoutes";
 const app: Express = express();
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://192.168.5.148:3000"
+  "http://192.168.29.48:3000"
 ];
 
 app.use(cors({
@@ -38,10 +38,10 @@ app.use(cookieParser());
 
 const httpServer = createServer(app);
 
-// Initialize Socket.IO
+// Socket.IO initialization here
 initializeSocket(httpServer);
 
-// Routes
+//All Routes
 
 app.use("/auth", authRoutes);
 
@@ -57,6 +57,8 @@ app.use("/messages", messageRoute)
 
 app.use("/support", supportRoute)
 
+
+// this is for testing routes
 app.get("/", (req: Request, res: Response) => {
   res.sendFile(__dirname + "/index.html");
 });

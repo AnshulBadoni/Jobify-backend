@@ -30,11 +30,11 @@ def generate_text_direct_api(prompt: str, model: str = "openai", system: str = "
     headers = {"Content-Type": "application/json"}
 
     if stream:
-        response = requests.post(url, json=payload, headers=headers, stream=True, timeout=30)
+        response = requests.post(url, json=payload, headers=headers, stream=True, timeout=60)
         response.raise_for_status()
         return response.iter_lines()
     else:
-        response = requests.post(url, json=payload, headers=headers, timeout=30)
+        response = requests.post(url, json=payload, headers=headers, timeout=60)
         response.raise_for_status()
         return response.text
 
