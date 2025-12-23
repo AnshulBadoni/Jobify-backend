@@ -104,7 +104,7 @@ export const getClosestJobs = async (req: Request, res: Response) => {
     }
     const user = await prisma.profile.findUnique({ where: { id } });
 
-    
+
     const jobs = await prisma.job.findMany({
       include: { company: true },
     });
@@ -147,7 +147,6 @@ export const postJob = async (req: Request, res: Response) => {
       title,
       description,
       skills,
-      type,
       location,
       salaryMin,
       salaryMax,
@@ -155,8 +154,8 @@ export const postJob = async (req: Request, res: Response) => {
       experience,
       employment,
       openings,
-      companyId,
-      featured,
+      companyId = 1,
+      featured = "draft",
     } = req.body;
 
     const user = (req as any).user;
@@ -178,7 +177,6 @@ export const postJob = async (req: Request, res: Response) => {
         title,
         description,
         skills,
-        type,
         location,
         salaryMin,
         salaryMax,

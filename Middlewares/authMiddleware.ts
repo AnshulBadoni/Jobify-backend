@@ -19,6 +19,7 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
     else if (req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
     }
+    console.log("Token:", token);
 
     if (!token) {
       res.status(401).send(setResponse(401, "Not authenticated", []));
@@ -27,6 +28,7 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
 
     // verify JWT
     const decoded = jwt.verify(token, process.env.secretKey || "defaultSecretKey") as DecodedToken;
+    console.log("Decoded Token:", decoded);
 
     if (!decoded?.id) {
       res.status(401).send(setResponse(401, "Unauthorized", []));

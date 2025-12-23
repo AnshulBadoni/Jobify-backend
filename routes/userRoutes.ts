@@ -7,8 +7,8 @@ const router = express.Router();
 // Authenticated routes
 router.get("/me", authenticateUser, getMe);
 router.get("/profile", authenticateUser, getProfile);
-router.put("/profile", authenticateUser, updateProfile);
-router.post("/summary", getSummary);
+router.patch("/profile", authenticateUser, updateProfile);
+router.post("/summary", authenticateUser, getSummary);
 router.get("/getResume", getResume)
 
 // Admin-only routes

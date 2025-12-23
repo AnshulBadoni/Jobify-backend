@@ -19,10 +19,14 @@ async def generate_profile_data(usernames: str) -> dict:
             combined_info += f"{profile['name'] or profile['username']} has {res['repos_count']} repos, {res['total_stars']} stars, {res['total_forks']} forks, top languages: {', '.join(res['top_languages'])}\n"
 
     overall_prompt = f"""
-    Summarize the combined profiles of the developers:
-    also add top 2 projects/repo and showcase of what 
-    give atleast 5 languages
-    find internal technologies and tools if used like redis kafka docker ci/cd if can find
+    Please review the following GitHub profiles and provide a concise, HR-friendly summary that includes:
+
+    1. **Overall Summary**: A brief overview of the candidate's skills, experience, and strengths as reflected in their GitHub activity.
+    2. **Rating**: A rating out of 5 based on the quality, consistency, and relevance of their projects.
+    3. **Tips for Improvement**: Constructive suggestions to enhance their profile or skills.
+    4. **Top Languages**: The programming languages the candidate uses most frequently.
+
+    Format the output clearly so that HR can quickly understand the candidate's technical profile and potential.
 
     {combined_info}
 

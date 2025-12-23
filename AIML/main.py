@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends
 import uvicorn
+# from db.connection import get_db
 
 from controllers.profile import profile
 from controllers.practice import practice
@@ -10,7 +12,7 @@ from controllers.pollination import pollination
 from controllers.uncensored import register_events, uncensored
 from grpc_server import create_grpc_server
 
-app = FastAPI()
+app = FastAPI(title="AIML Service", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,6 +25,10 @@ app.add_middleware(
 @app.get("/")
 def status():
     return {"status": "AIML service is running"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 app.include_router(pollination)
 app.include_router(uncensored)
@@ -60,7 +66,7 @@ async def on_shutdown():
     await app.state.grpc_server.stop(0)
 
 def serve():
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False, log_level="info")
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=False, log_level="info")
 
 if __name__ == "__main__":
     serve()

@@ -13,11 +13,14 @@ import messageRoute from "./routes/messageRoute";
 import supportRoute from "./routes/supportRoute";
 import jobRoutes from "./routes/jobRoutes";
 import companyRoutes from "./routes/companyRoutes";
+import paymentRoute from "./routes/paymentRoute";
 
 const app: Express = express();
 const allowedOrigins = [
+  "http://192.168.5.148:3000",
   "http://localhost:3000",
-  "http://192.168.29.48:3000"
+  "http://192.168.29.48:3000",
+  "http://localhost:3001"
 ];
 
 app.use(cors({
@@ -42,33 +45,21 @@ const httpServer = createServer(app);
 initializeSocket(httpServer);
 
 //All Routes
+app.get("/health", (req: Request, res: Response) => {
+  res.send({ status: "OK" });
+});
 
 app.use("/auth", authRoutes);
-
 app.use("/profile", userRoutes)
-
 app.use("/company", companyRoutes)
-
 app.use("/jobs", jobRoutes);
-
 app.use("/tasks", taskRoutes);
-
 app.use("/messages", messageRoute)
-
 app.use("/support", supportRoute)
-
-
-// this is for testing routes
-app.get("/", (req: Request, res: Response) => {
-  res.sendFile(__dirname + "/index.html");
-});
-
-app.get("/allrooms", (req: Request, res: Response) => {
-  res.send({});
-});
+app.use("/payment", paymentRoute);
 
 // Start the server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 httpServer.listen({ port: PORT, host: "0.0.0.0" }, () => {
   console.log(`Server is running on port ${PORT}`);
 });

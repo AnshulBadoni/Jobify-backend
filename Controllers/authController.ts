@@ -7,19 +7,8 @@ import { resolveToken } from "../utils";
 
 export const signUp = async (req: Request, res: Response) => {
     try {
-        const { username, email, role = "SEEKER", avatar = "", password } = req.body;
-
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        });
-        if (existingUser) {
-            res.status(409).send(setResponse(409, "Email already in use", []));
-            return
-        }
-
+        const { username, email, role = "SEEKER", avatar = "", password, company = null } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const user = await prisma.user.create({
             data: {
                 username,
@@ -33,24 +22,25 @@ export const signUp = async (req: Request, res: Response) => {
             },
             include: { profile: true },
         });
-
-
+        // upsert user into give company if its not null and is poster,admin
+        
         const token = jwt.sign(
-            { id: user.id },
+            {
+                id: user.id,
+                role: user.role
+            },
             process.env.secretKey || "defaultSecretKey",
             {
                 expiresIn: "1d",
             }
         );
-
         res.cookie("jwt", token, {
             maxAge: 1 * 24 * 60 * 60 * 1000,
             httpOnly: true,
+            path: "/",
         });
-
         // Hide password in response
         const responseUser = { ...user, password: undefined };
-
         res.status(201).send(setResponse(res.statusCode, "User created", { ...responseUser, token }));
     } catch (error) {
         console.error("Error in signUp:", error);
@@ -68,23 +58,22 @@ export const signIn = async (req: Request, res: Response) => {
         });
 
         if (!user) {
-            res
-                .status(401)
-                .send(setResponse(401, "Login Failed", "Invalid Email or Password"));
+            res.status(401).send(setResponse(401, "Login Failed", "Invalid Email or Password"));
             return
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            res
-                .status(401)
-                .send(setResponse(401, "Login Failed", "Invalid Email or Password"));
+            res.status(401).send(setResponse(401, "Login Failed", "Invalid Email or Password"));
             return
         }
 
         // Generate JWT
         const token = jwt.sign(
-            { id: user.id },
+            {
+                id: user.id,
+                role: user.role
+            },
             process.env.secretKey || "defaultSecretKey",
             { expiresIn: "1d" }
         );
@@ -94,7 +83,7 @@ export const signIn = async (req: Request, res: Response) => {
             secure: false, // set true in production (HTTPS)
             sameSite: "lax",
             maxAge: 24 * 60 * 60 * 1000,
-            // domain: "192.168.29.148",
+            path: "/",
         });
 
         // Hide password
@@ -106,14 +95,12 @@ export const signIn = async (req: Request, res: Response) => {
         res.status(200).send(
             setResponse(res.statusCode, "Login Success", {
                 user: safeUser,
-                needsProfileSetup, // 👈 frontend can use this
+                needsProfileSetup,
             })
         );
     } catch (error) {
         console.error(error);
-        res
-            .status(500)
-            .send(setResponse(res.statusCode, "Login Server Error", error));
+        res.status(500).send(setResponse(res.statusCode, "Login Server Error", error));
     }
 };
 

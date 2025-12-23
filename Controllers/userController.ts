@@ -25,6 +25,36 @@ export const getProfile = async (req: Request, res: Response) => {
             role: true,
           },
         },
+        experiences: {
+          select: {
+            id: true,
+            role: true,
+            companyName: true,
+            description: true,
+            startDate: true,
+            endDate: true,
+            isCurrent: true,
+            location: true,
+          },
+          orderBy: {
+            startDate: 'desc' // Show most recent first
+          }
+        },
+        educations: {
+          select: {
+            id: true,
+            degree: true,
+            institution: true,
+            fieldOfStudy: true,
+            startYear: true,
+            endYear: true,
+            grade: true,
+            description: true,
+          },
+          orderBy: {
+            startYear: 'desc'
+          }
+        },
         projects: {
           select: {
             id: true,
@@ -65,21 +95,22 @@ export const getMe = async (req: Request, res: Response) => {
 export const getSummary = async (req: Request, res: Response) => {
   try {
     const refresh = req.body.refresh || false;
-    // const id = (req as any).user?.id;
-    // if (!id) {
-    //   res.status(401).send(setResponse(401, "Unauthorized", []));
-    //   return
-    // }
-    // if (!refresh) {
-    //   const existing = await prisma.profile.findUnique({
-    //     where: { userId: id },
-    //     select: { summary: true },
-    //   });
-    //   if (existing?.summary) {
-    //     res.status(200).send(setResponse(200, "Summary fetched", existing.summary));
-    //     return
-    //   }
-    // }
+    const id = (req as any).user?.id;
+    if (!id) {
+      res.status(401).send(setResponse(401, "Unauthorized", []));
+      return
+    }
+    console.log(refresh, "Refresh", req.body.usernames);
+    if (!refresh) {
+      const existing = await prisma.profile.findUnique({
+        where: { userId: id },
+        select: { summary: true, rating: true },
+      });
+      if (existing?.summary) {
+        res.status(200).send(setResponse(200, "Summary fetched", existing));
+        return
+      }
+    }
 
     let { usernames } = req.body;
     if (!Array.isArray(usernames)) {
@@ -87,15 +118,18 @@ export const getSummary = async (req: Request, res: Response) => {
     }
 
     const summary = await generateSummary(usernames);
-    console.log("Summary generated:", summary);
 
-    // const summaryData = await prisma.profile.upsert({
-    //   where: { userId: id },
-    //   update: { summary },
-    //   create: { userId: id, summary },
-    // });
+    await prisma.profile.upsert({
+      where: { userId: id },
+      update: { summary: summary.overall_summary || "", rating: Number(summary.overall_rating.toFixed(1)) || null },
+      create: { userId: id, summary: summary.overall_summary || "", rating: Number(summary.overall_rating.toFixed(1)) || null },
+    });
 
-    res.status(200).send(setResponse(200, "Summary generated", summary));
+    const summaryResponse = await prisma.profile.findUnique({
+      where: { userId: id },
+      select: { summary: true, rating: true },
+    });
+    res.status(200).send(setResponse(200, "Summary generated", summaryResponse));
   } catch (error) {
     console.error("Error generating summary:", error);
     res.status(500).send(setResponse(500, "Server error", []));
@@ -242,27 +276,175 @@ export const getResume = async (req: Request, res: Response) => {
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const { fullName, email, avatar, bio, skills, experience } = req.body;
+    const {
+      // Basic Info
+      fullName,
+      username,
+      professionalRole,
+      currentLocation,
+      expectedLocation,
+      currentCTC,
+      expectedCTC,
+      bio,
+      background,
+      githubUrl,
+      resumeUrl,
 
+      // Arrays/JSON fields
+      skills,
+      experiences,
+      educations,
+      projects,
+
+      // User fields
+      email,
+      avatar,
+    } = req.body;
+
+    // Build dynamic update object for Profile
+    const profileUpdate: any = {};
+    if (fullName !== undefined) profileUpdate.fullName = fullName;
+    if (professionalRole !== undefined) profileUpdate.professionalRole = professionalRole;
+    if (bio !== undefined) profileUpdate.bio = bio;
+    if (background !== undefined) profileUpdate.background = background;
+    if (currentLocation !== undefined) profileUpdate.currentLocation = currentLocation;
+    if (expectedLocation !== undefined) profileUpdate.expectedLocation = expectedLocation;
+    if (currentCTC !== undefined) profileUpdate.currentCTC = currentCTC;
+    if (expectedCTC !== undefined) profileUpdate.expectedCTC = expectedCTC;
+    if (githubUrl !== undefined) profileUpdate.githubUrl = githubUrl;
+    if (resumeUrl !== undefined) profileUpdate.resumeUrl = resumeUrl;
+
+    // Handle skills array
+    if (skills !== undefined) {
+      profileUpdate.skills = Array.isArray(skills) ? skills : [];
+    }
+
+    // Build user update
+    const userUpdate: any = {};
+    if (username !== undefined) userUpdate.username = username;
+    if (email !== undefined) userUpdate.email = email;
+    if (avatar !== undefined) userUpdate.avatar = avatar;
+
+    // Build relations FOR UPDATE (with deleteMany)
+    const relationsForUpdate: any = {};
+
+    if (experiences !== undefined && Array.isArray(experiences)) {
+      relationsForUpdate.experiences = {
+        deleteMany: {}, // Delete all existing
+        create: experiences.map((exp: any) => ({
+          role: exp.role || "",
+          companyName: exp.company || "",
+          description: exp.details || "",
+          startDate: exp.period?.split('–')[0]?.trim() || exp.period?.split('-')[0]?.trim() || "",
+          endDate: exp.period?.split('–')[1]?.trim() || exp.period?.split('-')[1]?.trim() || null,
+          isCurrent: exp.period?.toLowerCase().includes('present') || false,
+          location: exp.location || null,
+        })),
+      };
+    }
+
+    if (educations !== undefined && Array.isArray(educations)) {
+      relationsForUpdate.educations = {
+        deleteMany: {},
+        create: educations.map((edu: any) => ({
+          degree: edu.degree || "",
+          institution: edu.institution || "",
+          fieldOfStudy: edu.field || null,
+          startYear: edu.year?.split('–')[0]?.trim() || edu.year?.split('-')[0]?.trim() || "",
+          endYear: edu.year?.split('–')[1]?.trim() || edu.year?.split('-')[1]?.trim() || null,
+          grade: edu.grade || null,
+          description: edu.description || null,
+        })),
+      };
+    }
+
+    if (projects !== undefined && Array.isArray(projects)) {
+      relationsForUpdate.projects = {
+        deleteMany: {},
+        create: projects.map((proj: any) => ({
+          name: proj.name || "",
+          description: proj.description || "",
+          imgs: proj.img || [],
+          skills: proj.skills || [],
+          link: proj.link || null,
+          startDate: proj.startDate || null,
+          endDate: proj.endDate || null,
+        })),
+      };
+    }
+
+    // Build relations FOR CREATE (without deleteMany)
+    const relationsForCreate: any = {};
+
+    if (experiences !== undefined && Array.isArray(experiences)) {
+      relationsForCreate.experiences = {
+        create: experiences.map((exp: any) => ({
+          role: exp.role || "",
+          companyName: exp.company || "",
+          description: exp.details || "",
+          startDate: exp.period?.split('–')[0]?.trim() || exp.period?.split('-')[0]?.trim() || "",
+          endDate: exp.period?.split('–')[1]?.trim() || exp.period?.split('-')[1]?.trim() || null,
+          isCurrent: exp.period?.toLowerCase().includes('present') || false,
+          location: exp.location || null,
+        })),
+      };
+    }
+
+    if (educations !== undefined && Array.isArray(educations)) {
+      relationsForCreate.educations = {
+        create: educations.map((edu: any) => ({
+          degree: edu.degree || "",
+          institution: edu.institution || "",
+          fieldOfStudy: edu.field || null,
+          startYear: edu.year?.split('–')[0]?.trim() || edu.year?.split('-')[0]?.trim() || "",
+          endYear: edu.year?.split('–')[1]?.trim() || edu.year?.split('-')[1]?.trim() || null,
+          grade: edu.grade || null,
+          description: edu.description || null,
+        })),
+      };
+    }
+
+    if (projects !== undefined && Array.isArray(projects)) {
+      relationsForCreate.projects = {
+        create: projects.map((proj: any) => ({
+          name: proj.name || "",
+          description: proj.description || "",
+          imgs: proj.img || [],
+          skills: proj.skills || [],
+          link: proj.link || null,
+          startDate: proj.startDate || null,
+          endDate: proj.endDate || null,
+        })),
+      };
+    }
+
+    console.log("Profile update object:", profileUpdate);
+    console.log("Relations for update:", relationsForUpdate);
+
+    // Update profile
     const profile = await prisma.profile.upsert({
       where: { userId: user.id },
       update: {
-        bio,
-        skills,
-        experience,
-        user: {
-          update: {
-            username: fullName,
-            email,
-            avatar,
-          },
-        },
+        ...profileUpdate,
+        ...relationsForUpdate, // ✅ WITH deleteMany
+        ...(Object.keys(userUpdate).length > 0 && {
+          user: { update: userUpdate },
+        }),
       },
       create: {
         userId: user.id,
-        bio,
-        skills,
-        experience,
+        fullName: fullName || "",
+        bio: bio || "",
+        professionalRole: professionalRole || "",
+        background: background || "",
+        currentLocation: currentLocation || "",
+        expectedLocation: expectedLocation || "",
+        currentCTC: currentCTC || "",
+        expectedCTC: expectedCTC || "",
+        githubUrl: githubUrl || "",
+        resumeUrl: resumeUrl || "",
+        skills: Array.isArray(skills) ? skills : [],
+        ...relationsForCreate,
       },
       include: {
         user: {
@@ -274,13 +456,25 @@ export const updateProfile = async (req: Request, res: Response) => {
             role: true,
           },
         },
+        experiences: {
+          orderBy: { startDate: 'desc' }
+        },
+        educations: {
+          orderBy: { startYear: 'desc' }
+        },
+        projects: true,
       },
     });
 
-    res.status(200).send(setResponse(200, "Profile saved successfully", profile));
+    res.status(200).send(setResponse(200, "Profile updated successfully", profile));
   } catch (error) {
-    console.error("Error saving profile:", error);
-    res.status(500).send(setResponse(500, "Server error", []));
+    console.error("Error updating profile:", error);
+
+    if (error instanceof Error) {
+      console.error("Error details:", error.message);
+    }
+
+    res.status(500).send(setResponse(500, "Failed to update profile", []));
   }
 };
 

@@ -1,245 +1,325 @@
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  username   String   @unique
-  password   String
-  role       UserRole
-  isVerified Boolean  @default(false)
-  avatar     String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  model User {
+    id         Int      @id @default(autoincrement())
+    email      String   @unique
+    username   String   @unique
+    password   String
+    role       UserRole
+    isVerified Boolean  @default(false)
+    avatar     String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 
-  // Relationships
-  profile          Profile?
-  jobs             Job[]         @relation("PostedJobs")
-  applications     Application[]
-  sentMessages     Message[]     @relation("SentMessages")
-  receivedMessages Message[]     @relation("ReceivedMessages")
+    // Relationships
+    profile          Profile?
+    jobs             Job[]         @relation("PostedJobs")
+    applications     Application[]
+    sentMessages     Message[]     @relation("SentMessages")
+    receivedMessages Message[]     @relation("ReceivedMessages")
 
-  // Chat
-  conversationsInitiated Conversation[] @relation("ConversationInitiator")
-  conversationsReceived  Conversation[] @relation("ConversationReceiver")
-  MessageRead            MessageRead[]
-}
+    // Chat
+    conversationsInitiated Conversation[] @relation("ConversationInitiator")
+    conversationsReceived  Conversation[] @relation("ConversationReceiver")
+    MessageRead            MessageRead[]
+    Subscription           Subscription[]
+  }
 
-model Profile {
-  id               Int       @id @default(autoincrement())
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId           Int       @unique
-  fullName         String?
-  bio              String?
-  companyId        Int?
-  currentCompany   Company?  @relation(fields: [companyId], references: [id])
-  location         String?
-  currentLocation  String?
-  expectedLocation String?
-  currentCTC       String?
-  expectedCTC      String?
-  professionalRole String?
-  background       String?
-  githubUrl        String?
-  summary          String?
-  resumeUrl        String?
-  rating           Float?
-  skills           String[]
-  experience       String?
-  projects         Project[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-}
+  model Profile {
+    id               Int      @id @default(autoincrement())
+    user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId           Int      @unique
+    fullName         String?
+    bio              String?
+    companyId        Int?
+    currentCompany   Company? @relation("CurrentCompany", fields: [companyId], references: [id])
+    location         String?
+    currentLocation  String?
+    expectedLocation String?
+    currentCTC       String?
+    expectedCTC      String?
+    professionalRole String?
+    background       String?
+    githubUrl        String?
+    summary          String?
+    resumeUrl        String?
+    rating           Float?
+    skills           String[]
 
-model Project {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  imgs        String[]
-  skills      String[]
-  link        String?
-  startDate   String?
-  endDate     String?
-  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId   Int
-}
+    experiences Experience[]
+    educations  Education[]
+    projects    Project[]
 
-model Company {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  iconUrl   String?
-  website   String?
-  location  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+  }
 
-  employees Profile[]
-  jobs      Job[]
-}
+  model Experience {
+    id        Int     @id @default(autoincrement())
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId Int
 
-model Job {
-  id          Int             @id @default(autoincrement())
-  poster      User            @relation("PostedJobs", fields: [posterId], references: [id], onDelete: Cascade)
-  posterId    Int
-  company     Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId   Int
-  title       String
-  description String
-  skills      String[]
-  type        JobType
-  location    String
-  salaryMin   Int?
-  salaryMax   Int?
-  currency    String?
-  experience  ExperienceLevel
-  employment  EmploymentType
-  openings    Int?            @default(1)
-  status      JobStatus       @default(OPEN)
-  slug        String          @unique
-  featured    Boolean         @default(false)
+    company     Company? @relation("WorkExperience", fields: [companyId], references: [id])
+    companyId   Int?
+    companyName String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    role        String
+    description String? @db.Text
+    startDate   String // or DateTime
+    endDate     String? // null if current
+    isCurrent   Boolean @default(false)
+    location    String?
 
-  applications Application[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  @@index([status])
-  @@index([location])
-  @@index([companyId])
-}
+    @@index([profileId])
+  }
 
-model Application {
-  id         Int       @id @default(autoincrement())
-  job        Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId      Int
-  seeker     User      @relation(fields: [seekerId], references: [id], onDelete: Cascade)
-  seekerId   Int
-  status     AppStatus @default(PENDING)
-  appliedAt  DateTime  @default(now())
-  matchScore Float?
+  model Education {
+    id        Int     @id @default(autoincrement())
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId Int
 
-  @@unique([jobId, seekerId])
-}
+    degree       String
+    institution  String
+    fieldOfStudy String?
+    startYear    String
+    endYear      String?
+    grade        String?
+    description  String? @db.Text
 
-model Embedding {
-  id        Int           @id @default(autoincrement())
-  userId    Int?          @unique
-  jobId     Int?          @unique
-  vector    Json
-  type      EmbeddingType
-  createdAt DateTime      @default(now())
-}
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-model Message {
-  id          Int           @id @default(autoincrement())
-  content     String
-  messageType MessageType   @default(TEXT)
-  status      MessageStatus @default(SENT)
+    @@index([profileId])
+  }
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  model Company {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    iconUrl   String?
+    website   String?
+    location  String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  sender         User          @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  senderId       Int
-  receiver       User?         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
-  receiverId     Int?
-  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  conversationId Int?
+    currentEmployees Profile[]    @relation("CurrentCompany")
+    pastEmployees    Experience[] @relation("WorkExperience")
+    jobs             Job[]
+  }
 
-  readBy MessageRead[]
-}
+  model Project {
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String
+    imgs        String[]
+    skills      String[]
+    link        String?
+    startDate   String?
+    endDate     String?
+    profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId   Int
+  }
 
-model Conversation {
-  id            Int       @id @default(autoincrement())
-  initiator     User      @relation("ConversationInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
-  initiatorId   Int
-  receiver      User      @relation("ConversationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  receiverId    Int
-  messages      Message[]
-  lastMessage   String?
-  lastMessageAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  model Job {
+    id          Int             @id @default(autoincrement())
+    poster      User            @relation("PostedJobs", fields: [posterId], references: [id], onDelete: Cascade)
+    posterId    Int
+    company     Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    companyId   Int
+    title       String
+    description String
+    skills      String[]
+    location    String
+    salaryMin   Int?
+    salaryMax   Int?
+    currency    String?
+    experience  ExperienceLevel
+    employment  EmploymentType
+    openings    Int?            @default(1)
+    status      JobStatus       @default(OPEN)
+    slug        String          @unique
+    featured    Boolean         @default(false)
 
-  @@unique([initiatorId, receiverId])
-}
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-model MessageRead {
-  id        Int      @id @default(autoincrement())
-  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  messageId Int
-  reader    User     @relation(fields: [readerId], references: [id], onDelete: Cascade)
-  readerId  Int
-  readAt    DateTime @default(now())
+    applications Application[]
 
-  @@unique([messageId, readerId])
-}
+    @@index([status])
+    @@index([location])
+    @@index([companyId])
+  }
 
-enum UserRole {
-  ADMIN
-  SEEKER
-  POSTER
-}
+  model Application {
+    id         Int       @id @default(autoincrement())
+    job        Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+    jobId      Int
+    seeker     User      @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+    seekerId   Int
+    status     AppStatus @default(PENDING)
+    appliedAt  DateTime  @default(now())
+    matchScore Float?
 
-enum AppStatus {
-  PENDING
-  SHORTLISTED
-  REJECTED
-  ACCEPTED
-}
+    @@unique([jobId, seekerId])
+  }
 
-enum EmbeddingType {
-  JOB
-  SEEKER
-}
+  model Embedding {
+    id        Int           @id @default(autoincrement())
+    userId    Int?          @unique
+    jobId     Int?          @unique
+    vector    Json
+    type      EmbeddingType
+    createdAt DateTime      @default(now())
+  }
 
-enum MessageType {
-  TEXT
-  IMAGE
-  FILE
-  AUDIO
-  VIDEO
-  SYSTEM
-}
+  model Message {
+    id          Int           @id @default(autoincrement())
+    content     String
+    messageType MessageType   @default(TEXT)
+    status      MessageStatus @default(SENT)
 
-enum MessageStatus {
-  SENT
-  DELIVERED
-  READ
-  FAILED
-}
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-enum JobType {
-  FULL_TIME
-  PART_TIME
-  CONTRACT
-  INTERNSHIP
-  FREELANCE
-}
+    sender         User          @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+    senderId       Int
+    receiver       User?         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+    receiverId     Int?
+    conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    conversationId Int?
 
-enum JobStatus {
-  OPEN
-  CLOSED
-  DRAFT
-}
+    readBy MessageRead[]
+  }
 
-enum ExperienceLevel {
-  INTERN
-  ENTRY
-  MID
-  SENIOR
-  LEAD
-}
+  model Conversation {
+    id            Int       @id @default(autoincrement())
+    initiator     User      @relation("ConversationInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+    initiatorId   Int
+    receiver      User      @relation("ConversationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    receiverId    Int
+    messages      Message[]
+    lastMessage   String?
+    lastMessageAt DateTime?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 
-enum EmploymentType {
-  FULLTIME
-  PARTTIME
-  CONTRACT
-  INTERNSHIP
-}
+    @@unique([initiatorId, receiverId])
+  }
+
+  model MessageRead {
+    id        Int      @id @default(autoincrement())
+    message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+    messageId Int
+    reader    User     @relation(fields: [readerId], references: [id], onDelete: Cascade)
+    readerId  Int
+    readAt    DateTime @default(now())
+
+    @@unique([messageId, readerId])
+  }
+
+  model Plan {
+    id            Int            @id @default(autoincrement())
+    name          String
+    tagline       String
+    monthlyPrice  Int
+    yearlyPrice   Int
+    tier          Int
+    features      String[]
+    subscriptions Subscription[]
+    createdAt     DateTime       @default(now())
+    updatedAt DateTime @updatedAt
+  }
+
+  model Subscription {
+    id     Int  @id @default(autoincrement())
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
+    plan   Plan @relation(fields: [planId], references: [id])
+    planId Int
+
+    razorpayOrderId   String?
+    razorpayPaymentId String?
+    razorpaySignature String?
+
+    status    SubscriptionStatus @default(PENDING)
+    startDate DateTime?
+    endDate   DateTime?
+    renews    Boolean            @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
+  }
+
+  enum SubscriptionStatus {
+    PENDING
+    ACTIVE
+    EXPIRED
+    FAILED
+    CANCELLED
+  }
+
+  enum UserRole {
+    ADMIN
+    SEEKER
+    POSTER
+  }
+
+  enum AppStatus {
+    PENDING
+    SHORTLISTED
+    REJECTED
+    ACCEPTED
+  }
+
+  enum EmbeddingType {
+    JOB
+    SEEKER
+  }
+
+  enum MessageType {
+    TEXT
+    IMAGE
+    FILE
+    AUDIO
+    VIDEO
+    SYSTEM
+  }
+
+  enum MessageStatus {
+    SENT
+    DELIVERED
+    READ
+    FAILED
+  }
+
+  enum JobStatus {
+    OPEN
+    CLOSED
+    DRAFT
+  }
+
+  enum ExperienceLevel {
+    INTERN
+    ENTRY
+    MID
+    SENIOR
+    LEAD
+  }
+
+  enum EmploymentType {
+      
+    PARTTIME
+    CONTRACT
+    INTERNSHIP
+  }
