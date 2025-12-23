@@ -17,6 +17,8 @@ import paymentRoute from "./routes/paymentRoute";
 
 const app: Express = express();
 const allowedOrigins = [
+  "https://crack-jobs.vercel.app/",
+  "https://crack-jobs.vercel.app",
   "http://192.168.5.148:3000",
   "http://localhost:3000",
   "http://192.168.29.48:3000",
