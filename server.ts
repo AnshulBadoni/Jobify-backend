@@ -16,6 +16,7 @@ import companyRoutes from "./routes/companyRoutes";
 
 const app: Express = express();
 const allowedOrigins = [
+  "crackjobs.vercel.app",
   "http://localhost:3000",
   "http://192.168.29.48:3000"
 ];
