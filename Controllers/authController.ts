@@ -23,7 +23,7 @@ export const signUp = async (req: Request, res: Response) => {
             include: { profile: true },
         });
         // upsert user into give company if its not null and is poster,admin
-        
+
         const token = jwt.sign(
             {
                 id: user.id,
@@ -80,8 +80,8 @@ export const signIn = async (req: Request, res: Response) => {
 
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: false, // set true in production (HTTPS)
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000,
             path: "/",
         });
