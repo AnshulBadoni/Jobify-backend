@@ -9,3 +9,4 @@ PyMuPDF
 python-docx
 httpx
 python-multipart
+rapidfuzz
