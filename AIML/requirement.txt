@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-transformers==4.35.0
-torch 
-torchvision
-torchaudio
-sentence-transformers
