@@ -7,3 +7,4 @@ torchaudio
 sentence-transformers
 PyMuPDF
 python-docx
+httpx
