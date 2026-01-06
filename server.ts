@@ -16,6 +16,8 @@ import companyRoutes from "./routes/companyRoutes";
 import paymentRoute from "./routes/paymentRoute";
 
 const app: Express = express();
+app.set("trust proxy", 1);
+
 const allowedOrigins = [
   "https://crack-jobs.vercel.app/",
   "https://crack-jobs.vercel.app",

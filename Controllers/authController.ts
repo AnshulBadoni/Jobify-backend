@@ -84,9 +84,10 @@ export const signIn = async (req: Request, res: Response) => {
             sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000,
             path: "/",
+            domain: ".vercel.app"
         });
 
-        // Hide password
+
         const { password: _, ...safeUser } = user;
 
         // Check profile
