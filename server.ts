@@ -19,7 +19,8 @@ const app: Express = express();
 app.set("trust proxy", 1);
 
 const allowedOrigins = [
-  "https://crack-jobs.vercel.app/",
+  "http://crackjob.in",
+  "http://www.crackjob.in",
   "https://crack-jobs.vercel.app",
   "http://192.168.5.148:3000",
   "http://localhost:3000",
