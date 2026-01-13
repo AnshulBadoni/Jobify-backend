@@ -82,7 +82,7 @@ export const signIn = async (req: Request, res: Response) => {
             httpOnly: true,
             secure: true,
             sameSite: "lax",
-            domain: ".crackjobs.in",
+            domain: ".crackjob.in",
             path: "/",
             maxAge: 86400000,
         });
