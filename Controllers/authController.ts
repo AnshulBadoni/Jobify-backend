@@ -80,11 +80,13 @@ export const signIn = async (req: Request, res: Response) => {
 
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "lax",
-            maxAge: 24 * 60 * 60 * 1000,
+            domain: ".crackjobs.in",
             path: "/",
+            maxAge: 86400000,
         });
+
 
 
         const { password: _, ...safeUser } = user;
